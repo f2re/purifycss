@@ -55,6 +55,35 @@ class Purifycss_Admin {
 	}
 
 	/**
+	 * Register action for add admin menu of plugin
+	 *
+	 * @return void
+	 */	
+	public function add_settings_page(){
+		add_options_page( 'PurifyCSS', 'PurifyCSS', 'manage_options', 'purifycss-plugin', [$this,'render_plugin_settings_page'] );
+	}
+
+	/**
+	 * function to render setting page
+	 * show partials php script with settings fields
+	 *
+	 * @return void
+	 */
+	public function render_plugin_settings_page(){
+		require_once 'partials/'.$this->plugin_name.'-admin-display.php';
+	}
+
+	/**
+	 * Register plugins settings fields
+	 *
+	 * @return void
+	 */
+	public function register_settings(){
+		// register API key of plugin
+		register_setting( $this->plugin_name, "api_key", 'string' );
+	}
+
+	/**
 	 * Register the stylesheets for the admin area.
 	 *
 	 * @since    1.0.0
