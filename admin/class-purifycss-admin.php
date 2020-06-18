@@ -87,9 +87,56 @@ class Purifycss_Admin {
 	}
 
 
+	/**
+	 * AJAX action activate code
+	 *
+	 * @return void
+	 */
+	public function actionActivate(){
+		$option = "purifycss_api_key";
+		$url    = 'https://purifycss.online/api/validate';
+		$key    = esc_attr($_POST['key']);
+
+		$msg 	= '';
+		// result of function execution
+		$result   = false;
+
+		// send request
+		$response = wp_remote_post( $url, [ 'body'=>['key'=>$key] ] );
+
+		if ( is_wp_error( $response ) ) {
+			$msg    = $response->get_error_message();
+			$result = false;
+		}else{
+			$_rsp = json_decode($response['body'], true);
+			if ( $_rsp['valid']==true ){
+				$result = update_option( $option, $key );
+			}else{
+				$result = false;
+				$msg    = $_rsp['error'];
+			}
+		}
+
+		// success result
+		if ( $result ){
+			wp_send_json([
+				'status'=>'OK',
+				'msg'=>__('License key acceped','purifycss').' '.$key,
+				'resp'=>$response
+				]);			
+		}else{
+			// error
+			wp_send_json([
+				'status'=>'ERR',
+				'msg'=>$msg==''?__('License key not acceped, site error','purifycss'):$msg,
+				'resp'=>$response
+				]);
+		}
+	}
+
 
 	/**
-	 * AJAX action enable live mode
+	 * AJAX action enable/disable live mode
 	 *
 	 * @return void
 	 */
@@ -115,6 +162,38 @@ class Purifycss_Admin {
 			wp_send_json([
 				'status'=>'ERR',
 				'msg'=>__('Live mode don\'t enabled, site error','purifycss'),
+				]);
+		}
+	}
+
+
+	/**
+	 * AJAX action enable/disable test mode
+	 *
+	 * @return void
+	 */
+	public function actionTestmode(){
+		$option = "purifycss_testmode";
+		$testmode = get_option($option);
+		if ( $testmode=="" || $testmode=="0" ){
+			$testmode="1";
+		}else{
+			$testmode="0";
+		}
+		$result = update_option( $option, $testmode );
+
+		// success result
+		if ( $result ){
+			wp_send_json([
+				'status'=>'OK',
+				'msg'=>__('Test mode '.($testmode=='1'?'enabled':'disabled'),'purifycss'),
+				'testmode'=>$testmode,
+				]);			
+		}else{
+			// error
+			wp_send_json([
+				'status'=>'ERR',
+				'msg'=>__('Test mode don\'t enabled, site error','purifycss'),
 				]);
 		}
 	}

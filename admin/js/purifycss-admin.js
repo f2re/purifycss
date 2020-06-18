@@ -18,8 +18,24 @@ jQuery(document).ready(function($){
 		 * bind event click on buttons
 		 */
 		$('#live_button').off('click').on('click', livebutton_click );
+		$('#test_button').off('click').on('click', testbutton_click );
+		$('#activate_button').off('click').on('click', activatebutton_click );
 		
 
+	}
+
+	/**
+	 * Activate button click to enable live mode
+	 * @param {event} ev 
+	 */
+	function activatebutton_click(ev){
+		let keyval='';
+		// get api value
+		keyval = $('#api-key').val();
+
+		sendAjax( { action:'purifycss_activate', key:keyval }, (data)=>{
+			console.log(data);
+		} );
 	}
 
 	/**
@@ -34,6 +50,23 @@ jQuery(document).ready(function($){
 					$('#live_button').addClass('active');
 				}else{
 					$('#live_button').removeClass('active');
+				}
+			}
+		} );
+	}
+
+	/**
+	 * Test button click to enable test mode
+	 * @param {event} ev 
+	 */
+	function testbutton_click(ev){
+		sendAjax( { action:'purifycss_testmode' }, (data)=>{
+			// get testmode status
+			if ( typeof(data.testmode)!=='undefined'  ){
+				if ( data.testmode==1 ){
+					$('#test_button').addClass('active');
+				}else{
+					$('#test_button').removeClass('active');
 				}
 			}
 		} );

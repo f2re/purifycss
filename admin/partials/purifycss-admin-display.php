@@ -29,8 +29,8 @@
         <p><?=__('PurifyCSS API license key:','purifycss')?> <a href="#"><?=__('Get licence key','purifycss')?></a> </p>
 
         <p> 
-            <input name="api-key" type="text" id="api-key" value="" class="regular-text"> 
-            <button class="button button-primary " id="css_button"><?=__('Activate','purifycss')?></button> 
+            <input name="api-key" type="text" id="api-key" value="<?=get_option('purifycss_api_key')?>" class="regular-text"> 
+            <button class="button button-primary " id="activate_button"><?=__('Activate','purifycss')?></button> 
         </p>
         
         <p class="expand-click"> <span class="dashicons dashicons-arrow-down"></span> <?=__('PurifyCSS options','purifycss')?></p>
