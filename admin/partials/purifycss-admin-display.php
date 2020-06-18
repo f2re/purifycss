@@ -17,26 +17,41 @@
     <h1>PurifyCSS</h1>
 
     <p>
-        <button class="button button-primary active" id="live_button">Enable Live Mode</button> 
+        <button class="button button-primary <?=get_option('purifycss_livemode')=='1'?'active':''?>" id="live_button"><?=__('Enable Live Mode','purifycss')?></button> 
     </p>
 
     <p>
-        <button class="button button-primary" id="test_button">Enable Test Mode</button>
+        <button class="button " id="test_button"><?=__('Enable Test Mode','purifycss')?></button>
     </p>
 
     <div class="manage-menus">
-        <p> PurifyCSS API license key: <a href="#">Get licence key</a> </p>
-        <p> Purify HTML Code</p>
-        <p>
-            <button class="button button-primary " id="css_button">Get clean CSS code</button> 
+
+        <p><?=__('PurifyCSS API license key:','purifycss')?> <a href="#"><?=__('Get licence key','purifycss')?></a> </p>
+
+        <p> 
+            <input name="api-key" type="text" id="api-key" value="" class="regular-text"> 
+            <button class="button button-primary " id="css_button"><?=__('Activate','purifycss')?></button> 
         </p>
-        <p> Result: </p>
-        <p> Clean CSS code:</p>
-        <textarea class=" " name="" id="" cols="30" rows="10"></textarea>
+        
+        <p class="expand-click"> <span class="dashicons dashicons-arrow-down"></span> <?=__('PurifyCSS options','purifycss')?></p>
+        <p class="d-none pl-5">
+            <?=__('Custom HTML Code:','purifycss')?> <br/>
+            <textarea class=" " name="" id="" cols="100" rows="10"></textarea>
+        </p>
+
+        <p>
+            <button class="button button-primary " id="css_button"><?=__('Get clean CSS code','purifycss')?></button> 
+        </p>
+
+        <p><?=__('Result:','purifycss')?> </p>
+
+        <p><?=__('Clean CSS code:','purifycss')?></p>
+
+        <textarea class=" " name="" id="" cols="100" rows="10"></textarea>
     </div>
 
     <p>
-        <button class="button button-primary" id="save_button">Save settings</button>
+        <button class="button button-primary" id="save_button"><?=__('Save settings','purifycss')?></button>
     </p>
 
 </div>

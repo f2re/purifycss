@@ -162,6 +162,11 @@ class Purifycss {
 
 		// register settings for plugin
 		$this->loader->add_action( 'admin_init',$plugin_admin, 'register_settings' );
+
+		/**
+		 * add ajax action from admin
+		 */
+		$this->loader->add_action( 'wp_ajax_purifycss_livemode',$plugin_admin, 'actionLivemode' );
 	}
 
 	/**

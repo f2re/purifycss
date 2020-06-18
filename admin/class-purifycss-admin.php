@@ -80,8 +80,45 @@ class Purifycss_Admin {
 	 */
 	public function register_settings(){
 		// register API key of plugin
-		register_setting( $this->plugin_name, "api_key", 'string' );
+		register_setting( $this->plugin_name, "purifycss_api_key", 'string' );
+
+		// register Livemode of plugin
+		register_setting( $this->plugin_name, "purifycss_livemode", 'string' );
 	}
+
+
+
+	/**
+	 * AJAX action enable live mode
+	 *
+	 * @return void
+	 */
+	public function actionLivemode(){
+		$option = "purifycss_livemode";
+		$livemode = get_option($option);
+		if ( $livemode=="" || $livemode=="0" ){
+			$livemode="1";
+		}else{
+			$livemode="0";
+		}
+		$result = update_option( $option, $livemode );
+
+		// success result
+		if ( $result ){
+			wp_send_json([
+				'status'=>'OK',
+				'msg'=>__('Live mode '.($livemode=='1'?'enabled':'disabled'),'purifycss'),
+				'livemode'=>$livemode,
+				]);			
+		}else{
+			// error
+			wp_send_json([
+				'status'=>'ERR',
+				'msg'=>__('Live mode don\'t enabled, site error','purifycss'),
+				]);
+		}
+	}
+
 
 	/**
 	 * Register the stylesheets for the admin area.

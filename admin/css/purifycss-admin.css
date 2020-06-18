@@ -2,3 +2,22 @@
  * All of the CSS for your admin-specific functionality should be
  * included in this file.
  */
+
+ .expand-click{
+     text-decoration: dashed;
+     cursor: pointer;
+ }
+
+ .d-none{
+     display:none;
+ }
+
+ .pl-5{
+     padding-left:2rem;
+ }
+
+
+.btn.disabled, .btn:disabled {
+    opacity: .65;
+    pointer-events: none;
+}
