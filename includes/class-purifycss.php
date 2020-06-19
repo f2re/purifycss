@@ -122,6 +122,11 @@ class Purifycss {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-purifycss-public.php';
 
+		/**
+		 * The class define static helper functions
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-purifycss-helper.php';
+
 		$this->loader = new Purifycss_Loader();
 
 	}
@@ -169,6 +174,7 @@ class Purifycss {
 		$this->loader->add_action( 'wp_ajax_purifycss_livemode',$plugin_admin, 'actionLivemode' );
 		$this->loader->add_action( 'wp_ajax_purifycss_testmode',$plugin_admin, 'actionTestmode' );
 		$this->loader->add_action( 'wp_ajax_purifycss_activate',$plugin_admin, 'actionActivate' );
+		$this->loader->add_action( 'wp_ajax_purifycss_getcss',$plugin_admin, 'actionGetCSS' );
 	}
 
 	/**

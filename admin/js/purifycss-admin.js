@@ -20,9 +20,39 @@ jQuery(document).ready(function($){
 		$('#live_button').off('click').on('click', livebutton_click );
 		$('#test_button').off('click').on('click', testbutton_click );
 		$('#activate_button').off('click').on('click', activatebutton_click );
+		$('#css_button').off('click').on('click', cssbutton_click );
+
+		$('.expand-click').off('click').on('click', toogletext_click );
 		
 
 	}
+
+
+	/**
+	 * GetCSS button click to send request to get CSS
+	 * @param {event} ev 
+	 */
+	function cssbutton_click(ev){
+		let customhtml = $('#customhtml_text').val().trim();
+		sendAjax( { action:'purifycss_getcss', customhtml:customhtml }, (data)=>{
+			console.log(data);
+		} );
+	}
+
+	/**
+	 * Expand/ scrollup block
+	 * @param {event} ev 
+	 */
+	function toogletext_click(ev){
+		$('.expand-click').toggleClass('active');
+		if ( $('.expand-click').hasClass('active') ){
+			$('.expand-block').removeClass('d-none');
+			$('.expand-click .dashicons').removeClass('dashicons-arrow-right').addClass('dashicons-arrow-down');
+		}else{
+			$('.expand-block').addClass('d-none');
+			$('.expand-click .dashicons').removeClass('dashicons-arrow-down').addClass('dashicons-arrow-right');
+		}
+	} 
 
 	/**
 	 * Activate button click to enable live mode

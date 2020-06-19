@@ -29,14 +29,14 @@
         <p><?=__('PurifyCSS API license key:','purifycss')?> <a href="#"><?=__('Get licence key','purifycss')?></a> </p>
 
         <p> 
-            <input name="api-key" type="text" id="api-key" value="<?=get_option('purifycss_api_key')?>" class="regular-text"> 
+            <input name="api-key" type="text" id="api-key" value="<?=get_option('purifycss_api_key')?>" autocomplete="off" class="regular-text"> 
             <button class="button button-primary " id="activate_button"><?=__('Activate','purifycss')?></button> 
         </p>
         
-        <p class="expand-click"> <span class="dashicons dashicons-arrow-down"></span> <?=__('PurifyCSS options','purifycss')?></p>
-        <p class="d-none pl-5">
+        <p class="expand-click"> <span class="dashicons dashicons-arrow-right"></span> <span class="clickable"><?=__('PurifyCSS options','purifycss')?> </span> </p>
+        <p class="d-none pl-5 expand-block">
             <?=__('Custom HTML Code:','purifycss')?> <br/>
-            <textarea class=" " name="" id="" cols="100" rows="10"></textarea>
+            <textarea class=" " name="" id="customhtml_text" cols="100" rows="10"></textarea>
         </p>
 
         <p>

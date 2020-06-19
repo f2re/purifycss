@@ -8,6 +8,10 @@
      cursor: pointer;
  }
 
+ .clickable{
+     border-bottom: 1px dashed gray;
+ }
+
  .d-none{
      display:none;
  }
