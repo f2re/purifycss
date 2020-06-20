@@ -33,7 +33,7 @@ jQuery(document).ready(function($){
 	 * @param {event} ev 
 	 */
 	function cssbutton_click(ev){
-		let customhtml = $('#customhtml_text').val().trim();
+		let customhtml = customhtml_text.codemirror.doc.getValue();
 		sendAjax( { action:'purifycss_getcss', customhtml:customhtml }, (data)=>{
 			console.log(data);
 		} );
@@ -48,6 +48,15 @@ jQuery(document).ready(function($){
 		if ( $('.expand-click').hasClass('active') ){
 			$('.expand-block').removeClass('d-none');
 			$('.expand-click .dashicons').removeClass('dashicons-arrow-right').addClass('dashicons-arrow-down');
+
+			if ( !$('#customhtml_text').hasClass('initialized') ){
+				// mark textarea as already initialized
+				$('#customhtml_text').addClass('initialized');
+				
+				// initialize code editor
+				customhtml_text = wp.codeEditor.initialize( "customhtml_text", customhtml_text_param ); 
+			}
+
 		}else{
 			$('.expand-block').addClass('d-none');
 			$('.expand-click .dashicons').removeClass('dashicons-arrow-down').addClass('dashicons-arrow-right');
@@ -64,6 +73,9 @@ jQuery(document).ready(function($){
 		keyval = $('#api-key').val();
 
 		sendAjax( { action:'purifycss_activate', key:keyval }, (data)=>{
+			if ( data.status=="OK" ){
+				$('.activated-text').removeClass('d-none');
+			}
 			console.log(data);
 		} );
 	}

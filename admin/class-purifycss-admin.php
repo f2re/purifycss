@@ -113,6 +113,7 @@ class Purifycss_Admin {
 
 		// save html code
 		update_option( 'purifycss_customhtml', $html );
+		// var_dump(get_option( 'purifycss_customhtml' ));
 
 		// send request
 		$response = wp_remote_post( $url, [ 'body'=>[
@@ -130,22 +131,31 @@ class Purifycss_Admin {
 		}else{
 			// get body request
 			$_rsp = json_decode($response['body'], true);
-			if ( isset($_rsp['error']) ){
+			if ( !$_rsp || isset($_rsp['error']) ){
 				$result = false;
-				$msg    = $_rsp['response']['message'];
-				$resmsg = $_rsp['response']['message'];
+				if ( isset($_rsp['response']['message']) ){
+					$msg    = $_rsp['response']['message'];
+					$resmsg = $_rsp['response']['message'];
+				}else{
+					$msg    =  $resmsg = "error";
+				}
 			}else{
 				$result = true;
 				$css = update_option( $option, $_rsp['result']['purified']['content'] );
 				// save css to file
-				PurifycssHelper::savecss($css);
+				PurifycssHelper::save_css($css);
 
 				$resmsg = '<b>'.$_rsp['result']['stats']['percentageUnused']
 							   .' ('.$_rsp['result']['stats']['after'].')</b> '
 							   .__('of your CSS has been cleaned up','purifycss');
-				$resmsg=$response;
+
+				// save result text to db
+				update_option( 'purifycss_resultdata', $resmsg );
+				
 			}
 		}
+		// remove this
+		$resmsg=$response;
 
 		// success result
 		if ( $result ){
@@ -153,14 +163,16 @@ class Purifycss_Admin {
 				'status'=>'OK',
 				'msg'=>__('CSS generated successfully','purifycss'),
 				'resmsg'=>$resmsg,
-				'styles'=>$css
+				'styles'=>$css,
+				'resp'=>$response
 				]);			
 		}else{
 			// error
 			wp_send_json([
 				'status'=>'ERR',
 				'msg'=>$msg==''?__('Error by CSS generated','purifycss'):$msg,
-				'resmsg'=>$resmsg
+				'resmsg'=>$resmsg,
+				'resp'=>$response
 				]);
 		}
 	}
@@ -188,10 +200,13 @@ class Purifycss_Admin {
 		}else{
 			$_rsp = json_decode($response['body'], true);
 			if ( $_rsp['valid']==true ){
-				$result = update_option( $option, $key );
+				update_option( $option, $key );
+				$result = true;
+				update_option( 'purifycss_api_key_activated', true);
 			}else{
 				$result = false;
 				$msg    = $_rsp['error'];
+				update_option( 'purifycss_api_key_activated', false);
 			}
 		}
 
@@ -307,20 +322,30 @@ class Purifycss_Admin {
 	 */
 	public function enqueue_scripts() {
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Purifycss_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Purifycss_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/purifycss-admin.js', array( 'jquery' ), $this->version, false );
 
+
+		// подключаем редактор кода для HTML.
+		$settings_html = wp_enqueue_code_editor( array( 'type' => 'text/html' ) );
+		$settings_css  = wp_enqueue_code_editor( array( 'type' => 'text/css' ) );
+
+		// ничего не делаем если CodeMirror отключен.
+		if ( false === $settings_html ) {
+			return;
+		}
+
+		// инициализация
+		wp_add_inline_script( 
+			'code-editor',
+			sprintf( 'jQuery( function() { 				
+				var purified_css = wp.codeEditor.initialize( "purified_css", %s );
+				var customhtml_text; 
+			} );',  wp_json_encode( $settings_css )  )  
+		);
+
+		// html text code editor params
+		wp_localize_script( $this->plugin_name, 'customhtml_text_param', $settings_html  );
+		
 	}
 
 }

@@ -20,8 +20,27 @@
      padding-left:2rem;
  }
 
+ .green-text{
+    color:green;
+ }
 
 .btn.disabled, .btn:disabled {
     opacity: .65;
     pointer-events: none;
+}
+
+.inspan > span, .inspan.active span.enable{
+    display: none;
+}
+
+.inspan span.enable{
+    display: inline;
+}
+
+.inspan.active span.disable{
+    display: inline;
+}
+
+.activated-text .dashicons{
+    line-height:30px;
 }
