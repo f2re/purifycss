@@ -116,14 +116,15 @@ class Purifycss_Admin {
 		// var_dump(get_option( 'purifycss_customhtml' ));
 
 		// send request
-		$response = wp_remote_post( $url, [ 'body'=>[
+		$response = wp_remote_post( $url, [ 
 			'url'      => [get_site_url()],
 			'source'   => 'wp-plugin',
 			'options'  => ['crawl'=>true],
 			'htmlCode' => $html,
 			'key'      => $key
-			] ] );
-
+			 ] );
+		
+		
 		// check error
 		if ( is_wp_error( $response ) ) {
 			$msg    = $response->get_error_message();
@@ -172,7 +173,7 @@ class Purifycss_Admin {
 				'status'=>'ERR',
 				'msg'=>$msg==''?__('Error by CSS generated','purifycss'):$msg,
 				'resmsg'=>$resmsg,
-				'resp'=>$response
+				'resp'=>$response,
 				]);
 		}
 	}

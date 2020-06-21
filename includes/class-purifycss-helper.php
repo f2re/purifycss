@@ -10,14 +10,6 @@
  * @subpackage Purifycss/includes
  */
 
-/**
- * The file that defines htlper function
- *
- * @since      1.0.0
- * @package    Purifycss
- * @subpackage Purifycss/includes
- * @author     F2re <lendingad@gmail.com>
- */
 class PurifycssHelper {
 
     /**
@@ -69,6 +61,45 @@ class PurifycssHelper {
             return file_get_contents($file);
         }
         return "nofile";
+    }
+
+    /**
+     * get path to css file
+     *
+     * @return void
+     */
+    static public function get_css_file(){
+        $file = plugin_dir_url( ( __FILE__ ) ).'../' . self::$folder.self::$style ;
+        return $file;
+    }
+
+    /**
+     * Check if LIVE mode enabled
+     *
+     * @return void
+     */
+    static public function check_live_mode(){
+        if ( get_option('purifycss_livemode')=='1' ){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if TEST mode enabled
+     *
+     * @return void
+     */
+    static public function check_test_mode(){
+        if(!function_exists('wp_get_current_user')) {
+            include(ABSPATH . "wp-includes/pluggable.php"); 
+        }
+
+        $cur_user = wp_get_current_user();
+        if ( get_option('purifycss_testmode')=='1' && $cur_user->ID!==0 ){
+            return true;
+        }
+        return false;
     }
 
 }

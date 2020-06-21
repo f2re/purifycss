@@ -55,25 +55,43 @@ class Purifycss_Public {
 	}
 
 	/**
+	 * dequeue styles in site
+	 * before check if live mode ot prod mode
+	 *
+	 * @return void
+	 */
+	function dequeue_all_styles() {
+		if ( PurifycssHelper::check_live_mode() || PurifycssHelper::check_test_mode() ){
+			global $wp_styles;
+			foreach( $wp_styles->queue as $style ) {
+				wp_dequeue_style($wp_styles->registered[$style]->handle);
+			}
+		}
+	}
+
+	/**
+	 * remove inline styles
+	 *
+	 * @param [type] $content
+	 * @return void
+	 */
+	public function remove_inline_styles($content){
+		//--Remove all inline styles--
+		$content = preg_replace('/<style[^>]*>[^<]*<\/style>/is','',$content);
+		return $content;
+	}
+
+	/**
 	 * Register the stylesheets for the public-facing side of the site.
 	 *
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Purifycss_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Purifycss_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/purifycss-public.css', array(), $this->version, 'all' );
+		if ( PurifycssHelper::check_live_mode() || PurifycssHelper::check_test_mode() ){
+			// echo PurifycssHelper::get_css_file();
+			wp_enqueue_style( $this->plugin_name, PurifycssHelper::get_css_file(), array(), $this->version, 'all' );
+		}
 
 	}
 

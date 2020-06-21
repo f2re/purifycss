@@ -188,8 +188,21 @@ class Purifycss {
 
 		$plugin_public = new Purifycss_Public( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
+		$this->loader->add_action( 'wp_print_styles', $plugin_public, 'enqueue_styles',PHP_INT_MAX );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+		
+		// 
+		// Define public hooks to replace styles
+		// 
+
+		// this will remove all enqueued styles in head
+		$this->loader->add_action( 'wp_print_styles', $plugin_public, 'dequeue_all_styles', PHP_INT_MAX - 1 );
+		$this->loader->add_action( 'elementor/frontend/after_enqueue_styles', $plugin_public, 'dequeue_all_styles', PHP_INT_MAX );
+
+		// add filter to remove inline styles
+		if ( PurifycssHelper::check_live_mode() || PurifycssHelper::check_test_mode() ){
+			$this->loader->add_filter( 'the_content', $plugin_public, 'remove_inline_styles', PHP_INT_MAX );
+		}
 
 	}
 

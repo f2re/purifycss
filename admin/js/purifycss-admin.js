@@ -33,7 +33,12 @@ jQuery(document).ready(function($){
 	 * @param {event} ev 
 	 */
 	function cssbutton_click(ev){
-		let customhtml = customhtml_text.codemirror.doc.getValue();
+		let customhtml='';
+		if ( typeof(customhtml_text.codemirror)!=='undefined' ){
+			customhtml = customhtml_text.codemirror.doc.getValue();
+		}else{
+			customhtml = $('#customhtml_text').val();
+		}
 		sendAjax( { action:'purifycss_getcss', customhtml:customhtml }, (data)=>{
 			console.log(data);
 		} );
