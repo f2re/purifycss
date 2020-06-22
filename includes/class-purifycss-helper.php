@@ -64,6 +64,25 @@ class PurifycssHelper {
     }
 
     /**
+     * compare referer with needed values
+     *
+     * @return void
+     */
+    static public function check_referer(){
+
+        if (isset($_GET['purify']) && $_GET['purify']=='false' ) {
+            return true;
+        }
+        return false;
+
+        // echo wp_get_raw_referer();
+        if ( strpos(wp_get_raw_referer(),'https://purifycss.online')!==false ){
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * get path to css file
      *
      * @return void

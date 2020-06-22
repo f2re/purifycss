@@ -86,6 +86,49 @@ class Purifycss_Admin {
 		register_setting( $this->plugin_name, "purifycss_livemode", 'string' );
 	}
 
+	/**
+	 * function to send request to save CSS code
+	 *
+	 * @return void
+	 */
+	public function actionSaveCSS(){
+		$key    = get_option('purifycss_api_key');
+		$html   = esc_attr($_POST['customhtml']);
+		$msg 	= '';
+		// result msg for display in div block
+		$resmsg = '';
+		// result of function execution
+		$result   = false;
+
+		// check license key
+		if ( $key =='' ){
+			$msg = __("Invalid licanse key. Please enter verifed license",'purifycss');
+			wp_send_json([ 'status'=>'ERR','msg'=>$msg,'resmsg'=>'error' ]);
+		}
+
+		// save html code
+		update_option( 'purifycss_customhtml', $html );
+		// var_dump(get_option( 'purifycss_customhtml' ));
+		
+		// remove this
+		// $resmsg=$response;
+
+		// success result
+		if ( $result ){
+			wp_send_json([
+				'status'=>'OK',
+				'msg'=>__('Params saved successfully','purifycss'),
+				'resmsg'=>$resmsg,
+				]);			
+		}else{
+			// error
+			wp_send_json([
+				'status'=>'ERR',
+				'msg'=>$msg==''?__('Error by CSS generated','purifycss'):$msg,
+				'resmsg'=>$resmsg,
+				]);
+		}
+	}
 
 	/**
 	 * function to send request to get CSS code
@@ -117,11 +160,15 @@ class Purifycss_Admin {
 
 		// send request
 		$response = wp_remote_post( $url, [ 
-			'url'      => [get_site_url()],
-			'source'   => 'wp-plugin',
-			'options'  => ['crawl'=>true],
-			'htmlCode' => $html,
-			'key'      => $key
+			'body'=>[
+				// 'url'      => [get_site_url()],
+				"url"      => ["https://purifycss.tw1.ru/"],
+				"source"   => 'wp-plugin',
+				"options"  => ['crawl'=>true],
+				"htmlCode" => $html,
+				"key"      => $key 
+				]
+
 			 ] );
 		
 		
@@ -142,12 +189,14 @@ class Purifycss_Admin {
 				}
 			}else{
 				$result = true;
-				$css = update_option( $option, $_rsp['result']['purified']['content'] );
+				update_option( $option, $_rsp['results']['purified']['content'] );
+				$css = $_rsp['results']['purified']['content'];
 				// save css to file
 				PurifycssHelper::save_css($css);
-
-				$resmsg = '<b>'.$_rsp['result']['stats']['percentageUnused']
-							   .' ('.$_rsp['result']['stats']['after'].')</b> '
+				$percentage = round((($_rsp['results']['stats']['beforeBytes']-$_rsp['results']['stats']['afterBytes'])/$_rsp['results']['stats']['beforeBytes'])*100);
+				// calc percentage
+				$resmsg = '<b>'.$_rsp['results']['stats']['afterBytes']
+							   .' ('.$percentage.'%)</b> '
 							   .__('of your CSS has been cleaned up','purifycss');
 
 				// save result text to db
@@ -156,7 +205,7 @@ class Purifycss_Admin {
 			}
 		}
 		// remove this
-		$resmsg=$response;
+		// $resmsg=$response;
 
 		// success result
 		if ( $result ){
@@ -165,7 +214,7 @@ class Purifycss_Admin {
 				'msg'=>__('CSS generated successfully','purifycss'),
 				'resmsg'=>$resmsg,
 				'styles'=>$css,
-				'resp'=>$response
+				'resp'=>$_rsp
 				]);			
 		}else{
 			// error
@@ -335,14 +384,6 @@ class Purifycss_Admin {
 			return;
 		}
 
-		// инициализация
-		wp_add_inline_script( 
-			'code-editor',
-			sprintf( 'jQuery( function() { 				
-				var purified_css = wp.codeEditor.initialize( "purified_css", %s );
-				var customhtml_text; 
-			} );',  wp_json_encode( $settings_css )  )  
-		);
 
 		// html text code editor params
 		wp_localize_script( $this->plugin_name, 'customhtml_text_param', $settings_html  );

@@ -61,12 +61,11 @@ class Purifycss_Public {
 	 * @return void
 	 */
 	function dequeue_all_styles() {
-		if ( PurifycssHelper::check_live_mode() || PurifycssHelper::check_test_mode() ){
-			global $wp_styles;
-			foreach( $wp_styles->queue as $style ) {
-				wp_dequeue_style($wp_styles->registered[$style]->handle);
-			}
+		global $wp_styles;
+		foreach( $wp_styles->queue as $style ) {
+			wp_dequeue_style($wp_styles->registered[$style]->handle);
 		}
+
 	}
 
 	/**
@@ -87,12 +86,8 @@ class Purifycss_Public {
 	 * @since    1.0.0
 	 */
 	public function enqueue_styles() {
-
-		if ( PurifycssHelper::check_live_mode() || PurifycssHelper::check_test_mode() ){
-			// echo PurifycssHelper::get_css_file();
-			wp_enqueue_style( $this->plugin_name, PurifycssHelper::get_css_file(), array(), $this->version, 'all' );
-		}
-
+		// echo PurifycssHelper::get_css_file();
+		wp_enqueue_style( $this->plugin_name, PurifycssHelper::get_css_file(), array(), $this->version, 'all' );
 	}
 
 	/**

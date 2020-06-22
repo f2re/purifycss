@@ -1,6 +1,7 @@
 jQuery(document).ready(function($){
 	'use strict';
 
+	var purified_css;
 	/**
 	 * All of the code for your admin-facing JavaScript source
 	 * should reside in this file.
@@ -13,7 +14,8 @@ jQuery(document).ready(function($){
 	 * function of initialize settings window
 	 */
 	function init(){
-
+		purified_css = wp.codeEditor.initialize( "purified_css", {"codemirror":{"indentUnit":4,"indentWithTabs":true,"inputStyle":"contenteditable","lineNumbers":true,"lineWrapping":true,"styleActiveLine":true,"continueComments":true,"extraKeys":{"Ctrl-Space":"autocomplete","Ctrl-\/":"toggleComment","Cmd-\/":"toggleComment","Alt-F":"findPersistent","Ctrl-F":"findPersistent","Cmd-F":"findPersistent"},"direction":"ltr","gutters":[],"mode":"text\/css","lint":false,"autoCloseBrackets":true,"matchBrackets":true},"csslint":{"errors":true,"box-model":true,"display-property-grouping":true,"duplicate-properties":true,"known-properties":true,"outline-none":true},"jshint":{"boss":true,"curly":true,"eqeqeq":true,"eqnull":true,"es3":true,"expr":true,"immed":true,"noarg":true,"nonbsp":true,"onevar":true,"quotmark":"single","trailing":true,"undef":true,"unused":true,"browser":true,"globals":{"_":false,"Backbone":false,"jQuery":false,"JSON":false,"wp":false}},"htmlhint":{"tagname-lowercase":true,"attr-lowercase":true,"attr-value-double-quotes":false,"doctype-first":false,"tag-pair":true,"spec-char-escape":true,"id-unique":true,"src-not-empty":true,"attr-no-duplication":true,"alt-require":true,"space-tab-mixed-disabled":"tab","attr-unsafe-chars":true}} );
+				
 		/**
 		 * bind event click on buttons
 		 */
@@ -21,12 +23,30 @@ jQuery(document).ready(function($){
 		$('#test_button').off('click').on('click', testbutton_click );
 		$('#activate_button').off('click').on('click', activatebutton_click );
 		$('#css_button').off('click').on('click', cssbutton_click );
+		$('#save_button').off('click').on('click', savebutton_click );
+		
 
 		$('.expand-click').off('click').on('click', toogletext_click );
 		
 
 	}
 
+
+	/**
+	 * SaveCSS button click to send request to get CSS
+	 * @param {event} ev 
+	 */
+	function savebutton_click(ev){
+		let customhtml='';
+		if ( typeof(customhtml_text.codemirror)!=='undefined' ){
+			customhtml = customhtml_text.codemirror.doc.getValue();
+		}else{
+			customhtml = $('#customhtml_text').val();
+		}
+		sendAjax( { action:'savecss_getcss', customhtml:customhtml }, (data)=>{
+			console.log(data);
+		} );
+	}
 
 	/**
 	 * GetCSS button click to send request to get CSS
@@ -41,6 +61,8 @@ jQuery(document).ready(function($){
 		}
 		sendAjax( { action:'purifycss_getcss', customhtml:customhtml }, (data)=>{
 			console.log(data);
+			$('.result-block').html("Result: "+data.resmsg).show();
+			purified_css.codemirror.doc.setValue(data.styles);
 		} );
 	}
 

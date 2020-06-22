@@ -175,6 +175,7 @@ class Purifycss {
 		$this->loader->add_action( 'wp_ajax_purifycss_testmode',$plugin_admin, 'actionTestmode' );
 		$this->loader->add_action( 'wp_ajax_purifycss_activate',$plugin_admin, 'actionActivate' );
 		$this->loader->add_action( 'wp_ajax_purifycss_getcss',$plugin_admin, 'actionGetCSS' );
+		$this->loader->add_action( 'wp_ajax_purifycss_savecss',$plugin_admin, 'actionSaveCSS' );
 	}
 
 	/**
@@ -188,20 +189,21 @@ class Purifycss {
 
 		$plugin_public = new Purifycss_Public( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'wp_print_styles', $plugin_public, 'enqueue_styles',PHP_INT_MAX );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		
-		// 
-		// Define public hooks to replace styles
-		// 
-
-		// this will remove all enqueued styles in head
-		$this->loader->add_action( 'wp_print_styles', $plugin_public, 'dequeue_all_styles', PHP_INT_MAX - 1 );
-		$this->loader->add_action( 'elementor/frontend/after_enqueue_styles', $plugin_public, 'dequeue_all_styles', PHP_INT_MAX );
-
+		
 		// add filter to remove inline styles
-		if ( PurifycssHelper::check_live_mode() || PurifycssHelper::check_test_mode() ){
+		if ( !PurifycssHelper::check_referer() && ( PurifycssHelper::check_live_mode() || PurifycssHelper::check_test_mode() ) ){
+			// 
+			// Define public hooks to replace styles
+			// 
+			// this will remove all enqueued styles in head
+			$this->loader->add_action( 'wp_print_styles', $plugin_public, 'dequeue_all_styles', PHP_INT_MAX - 1 );
+			$this->loader->add_action( 'elementor/frontend/after_enqueue_styles', $plugin_public, 'dequeue_all_styles', PHP_INT_MAX );
+			
 			$this->loader->add_filter( 'the_content', $plugin_public, 'remove_inline_styles', PHP_INT_MAX );
+			
+			$this->loader->add_action( 'wp_print_styles', $plugin_public, 'enqueue_styles',PHP_INT_MAX );
 		}
 
 	}
