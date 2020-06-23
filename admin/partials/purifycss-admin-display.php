@@ -32,7 +32,7 @@
 
     <div class="manage-menus">
 
-        <p><?=__('PurifyCSS API license key:','purifycss')?> <a href="#"><?=__('Get licence key','purifycss')?></a> </p>
+        <p><?=__('PurifyCSS API license key:','purifycss')?> <a href="https://purifycss.online/license"><?=__('Get licence key','purifycss')?></a> </p>
 
         <p> 
             <input name="api-key" type="text" id="api-key" value="<?=get_option('purifycss_api_key')?>" autocomplete="off" class="regular-text"> 

@@ -159,6 +159,8 @@ class Purifycss {
 
 		$plugin_admin = new Purifycss_Admin( $this->get_plugin_name(), $this->get_version() );
 
+		
+
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
 
@@ -176,6 +178,8 @@ class Purifycss {
 		$this->loader->add_action( 'wp_ajax_purifycss_activate',$plugin_admin, 'actionActivate' );
 		$this->loader->add_action( 'wp_ajax_purifycss_getcss',$plugin_admin, 'actionGetCSS' );
 		$this->loader->add_action( 'wp_ajax_purifycss_savecss',$plugin_admin, 'actionSaveCSS' );
+
+
 	}
 
 	/**
@@ -191,6 +195,8 @@ class Purifycss {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		
+		// add menu plugin with action links
+		// $this->loader->add_filter( 'plugin_action_links_'.plugin_basename(__FILE__), $plugin_public, 'add_plugin_action_links' );
 		
 		// add filter to remove inline styles
 		if ( !PurifycssHelper::check_referer() && ( PurifycssHelper::check_live_mode() || PurifycssHelper::check_test_mode() ) ){

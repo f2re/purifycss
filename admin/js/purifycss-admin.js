@@ -43,8 +43,9 @@ jQuery(document).ready(function($){
 		}else{
 			customhtml = $('#customhtml_text').val();
 		}
-		sendAjax( { action:'savecss_getcss', customhtml:customhtml }, (data)=>{
-			console.log(data);
+		sendAjax( { action:'purifycss_savecss', customhtml:customhtml }, (data)=>{
+			// console.log(data);
+			window.location.reload();
 		} );
 	}
 
@@ -63,6 +64,12 @@ jQuery(document).ready(function($){
 			console.log(data);
 			$('.result-block').html("Result: "+data.resmsg).show();
 			purified_css.codemirror.doc.setValue(data.styles);
+			// enable/disable live mode if code generated succesfully
+			if ( data.livemode=='1' ){
+				$('#live_button').addClass('active');
+			}else{
+				$('#live_button').removeClass('active');				
+			}
 		} );
 	}
 

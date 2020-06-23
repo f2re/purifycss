@@ -54,6 +54,9 @@ class Purifycss_Admin {
 
 	}
 
+
+	
+
 	/**
 	 * Register action for add admin menu of plugin
 	 *
@@ -108,10 +111,8 @@ class Purifycss_Admin {
 
 		// save html code
 		update_option( 'purifycss_customhtml', $html );
-		// var_dump(get_option( 'purifycss_customhtml' ));
 		
-		// remove this
-		// $resmsg=$response;
+		$result   = true;
 
 		// success result
 		if ( $result ){
@@ -124,7 +125,7 @@ class Purifycss_Admin {
 			// error
 			wp_send_json([
 				'status'=>'ERR',
-				'msg'=>$msg==''?__('Error by CSS generated','purifycss'):$msg,
+				'msg'=>$msg==''?__('Error by save params','purifycss'):$msg,
 				'resmsg'=>$resmsg,
 				]);
 		}
@@ -138,6 +139,7 @@ class Purifycss_Admin {
 	public function actionGetCSS(){
 		$option = "purifycss_css";
 		$url    = 'https://purifycss.online/api/purify';
+		// $url    = 'https://daee089f682c.ngrok.io/api/purify';
 		$key    = get_option('purifycss_api_key');
 		$html   = esc_attr($_POST['customhtml']);
 		$msg 	= '';
@@ -201,6 +203,8 @@ class Purifycss_Admin {
 
 				// save result text to db
 				update_option( 'purifycss_resultdata', $resmsg );
+				// disable live mode
+				update_option( 'purifycss_livemode', '0' );
 				
 			}
 		}
@@ -214,7 +218,8 @@ class Purifycss_Admin {
 				'msg'=>__('CSS generated successfully','purifycss'),
 				'resmsg'=>$resmsg,
 				'styles'=>$css,
-				'resp'=>$_rsp
+				'resp'=>$_rsp,
+				'livemode' => get_option('purifycss_livemode'),
 				]);			
 		}else{
 			// error
@@ -223,6 +228,7 @@ class Purifycss_Admin {
 				'msg'=>$msg==''?__('Error by CSS generated','purifycss'):$msg,
 				'resmsg'=>$resmsg,
 				'resp'=>$response,
+				'livemode' => get_option('purifycss_livemode'),
 				]);
 		}
 	}

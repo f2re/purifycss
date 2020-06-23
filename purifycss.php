@@ -1,24 +1,24 @@
 <?php
 
 /**
- * The plugin bootstrap file
+ * Remove unused CSS and reduce the total web page load time. You can add the clean CSS manually or use the PurifyCSS API.
  *
  * This file is read by WordPress to generate the plugin information in the plugin
  * admin area. This file also includes all of the dependencies used by the plugin,
  * registers the activation and deactivation functions, and defines a function
  * that starts the plugin.
  *
- * @link              https://github.com/f2re
+ * @link              https://www.webperftools.com/wordpress-plugin-purifycss
  * @since             1.0.0
  * @package           Purifycss
  *
  * @wordpress-plugin
  * Plugin Name:       PurifyCSS
- * Plugin URI:        PurifyCSS
- * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
+ * Plugin URI:        https://www.webperftools.com/wordpress-plugin-purifycss
+ * Description:       Remove unused CSS and reduce the total web page load time. You can add the clean CSS manually or use the PurifyCSS API.
  * Version:           1.0.0
- * Author:            F2re
- * Author URI:        https://github.com/f2re
+ * Author:            Webperftools
+ * Author URI:        https://purifycss.online/license
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       purifycss
@@ -77,6 +77,17 @@ function run_purifycss() {
 
 	$plugin = new Purifycss();
 	$plugin->run();
+	
 
 }
 run_purifycss();
+
+// Добавим ссылку на страницу настроек в таблицу плагинов
+function plugin_settings_link($links) { 
+	$settings_link = '<a href="options-general.php?page=purifycss-plugin">'.__('Settings').'</a>'; 
+	array_unshift( $links, $settings_link ); 
+	return $links; 
+}
+
+$plugin_file = plugin_basename(__FILE__); 
+add_filter( "plugin_action_links_$plugin_file", 'plugin_settings_link' );

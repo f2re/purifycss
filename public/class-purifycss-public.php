@@ -62,10 +62,16 @@ class Purifycss_Public {
 	 */
 	function dequeue_all_styles() {
 		global $wp_styles;
+		// echo "<pre>";
 		foreach( $wp_styles->queue as $style ) {
+			if ( $style=='admin-bar' ){
+				continue;
+			}
+			// print_r($style);
+			// echo "/";
 			wp_dequeue_style($wp_styles->registered[$style]->handle);
 		}
-
+		// echo "</pre>";
 	}
 
 	/**

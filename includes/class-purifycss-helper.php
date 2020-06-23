@@ -43,6 +43,7 @@ class PurifycssHelper {
 
         // write code to file
         // style.css
+        unlink($file);
         file_put_contents($file, $content);
 
         return;
