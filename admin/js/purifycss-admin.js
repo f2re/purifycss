@@ -1,7 +1,8 @@
+let purified_css;
+let customhtml_text;
 jQuery(document).ready(function($){
 	'use strict';
 
-	var purified_css;
 	/**
 	 * All of the code for your admin-facing JavaScript source
 	 * should reside in this file.
@@ -16,6 +17,7 @@ jQuery(document).ready(function($){
 	function init(){
 		
 		purified_css = wp.codeEditor.initialize( "purified_css", {"codemirror":{"indentUnit":4,"indentWithTabs":true,"inputStyle":"contenteditable","lineNumbers":true,"lineWrapping":true,"styleActiveLine":true,"continueComments":true,"extraKeys":{"Ctrl-Space":"autocomplete","Ctrl-\/":"toggleComment","Cmd-\/":"toggleComment","Alt-F":"findPersistent","Ctrl-F":"findPersistent","Cmd-F":"findPersistent"},"direction":"ltr","gutters":[],"mode":"text\/css","lint":false,"autoCloseBrackets":true,"matchBrackets":true},"csslint":{"errors":true,"box-model":true,"display-property-grouping":true,"duplicate-properties":true,"known-properties":true,"outline-none":true},"jshint":{"boss":true,"curly":true,"eqeqeq":true,"eqnull":true,"es3":true,"expr":true,"immed":true,"noarg":true,"nonbsp":true,"onevar":true,"quotmark":"single","trailing":true,"undef":true,"unused":true,"browser":true,"globals":{"_":false,"Backbone":false,"jQuery":false,"JSON":false,"wp":false}},"htmlhint":{"tagname-lowercase":true,"attr-lowercase":true,"attr-value-double-quotes":false,"doctype-first":false,"tag-pair":true,"spec-char-escape":true,"id-unique":true,"src-not-empty":true,"attr-no-duplication":true,"alt-require":true,"space-tab-mixed-disabled":"tab","attr-unsafe-chars":true}} );
+		
 		/**
 		 * bind event click on buttons
 		 */
@@ -38,7 +40,7 @@ jQuery(document).ready(function($){
 	 */
 	function savebutton_click(ev){
 		let customhtml='';
-		if ( typeof(customhtml_text.codemirror)!=='undefined' ){
+		if ( typeof(customhtml_text)!=='undefined' && typeof(customhtml_text.codemirror)!=='undefined' ){
 			customhtml = customhtml_text.codemirror.doc.getValue();
 		}else{
 			customhtml = $('#customhtml_text').val();
@@ -89,7 +91,9 @@ jQuery(document).ready(function($){
 				$('#customhtml_text').addClass('initialized');
 				
 				// initialize code editor
-				customhtml_text = wp.codeEditor.initialize( "customhtml_text", customhtml_text_param ); 
+				if ( typeof(customhtml_text)==='undefined' ){
+					customhtml_text = wp.codeEditor.initialize( "customhtml_text", customhtml_text_param ); 
+				}
 			}
 
 		}else{
