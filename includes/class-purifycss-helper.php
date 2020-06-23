@@ -46,6 +46,9 @@ class PurifycssHelper {
         unlink($file);
         file_put_contents($file, $content);
 
+        // store to db
+        update_option( 'purifycss_css', $content );
+
         return;
     }
     

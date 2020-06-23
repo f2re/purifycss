@@ -96,7 +96,8 @@ class Purifycss_Admin {
 	 */
 	public function actionSaveCSS(){
 		$key    = get_option('purifycss_api_key');
-		$html   = esc_attr($_POST['customhtml']);
+		$html   = base64_encode($_POST['customhtml']);
+		$css    = ($_POST['editedcss']);
 		$msg 	= '';
 		// result msg for display in div block
 		$resmsg = '';
@@ -111,6 +112,8 @@ class Purifycss_Admin {
 
 		// save html code
 		update_option( 'purifycss_customhtml', $html );
+		// save css code
+		PurifycssHelper::save_css($css);
 		
 		$result   = true;
 
@@ -141,7 +144,7 @@ class Purifycss_Admin {
 		$url    = 'https://purifycss.online/api/purify';
 		// $url    = 'https://daee089f682c.ngrok.io/api/purify';
 		$key    = get_option('purifycss_api_key');
-		$html   = esc_attr($_POST['customhtml']);
+		$html   = base64_encode($_POST['customhtml']);
 		$msg 	= '';
 		// compiled styles
 		$css    = '';
@@ -158,8 +161,7 @@ class Purifycss_Admin {
 
 		// save html code
 		update_option( 'purifycss_customhtml', $html );
-		// var_dump(get_option( 'purifycss_customhtml' ));
-
+		
 		// send request
 		$response = wp_remote_post( $url, [ 
 			'body'=>[

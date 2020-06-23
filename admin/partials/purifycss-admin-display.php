@@ -43,7 +43,7 @@
         <p class="expand-click"> <span class="dashicons dashicons-arrow-right"></span> <span class="clickable"><?=__('PurifyCSS options','purifycss')?> </span> </p>
         <div class="d-none pl-5 expand-block">
             <?=__('Custom HTML Code:','purifycss')?> <br/>
-            <textarea class="html_editor" name="" id="customhtml_text" cols="100" rows="10" autocomplete="off"><?=get_option('purifycss_customhtml')?></textarea>
+            <textarea class="html_editor" name="" id="customhtml_text" cols="100" rows="10" autocomplete="off"><?=stripslashes(base64_decode(get_option('purifycss_customhtml')))?></textarea>
         </div>
 
         <p>
