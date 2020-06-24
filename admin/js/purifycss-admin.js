@@ -47,8 +47,11 @@ jQuery(document).ready(function($){
 		}
 
 		sendAjax( { action:'purifycss_savecss', customhtml:customhtml, editedcss:purified_css.codemirror.doc.getValue() }, (data)=>{
-			// console.log(data);
-			window.location.reload();
+
+			window.scroll({
+				top: 0, 
+				behavior: 'smooth'
+			  });
 		} );
 	}
 
@@ -174,20 +177,20 @@ jQuery(document).ready(function($){
 				// show notice
 				if ( typeof(data.msg)!=='undefined' ){
 					$('.notice').remove();
-					$('#wpbody-content').prepend('<div class="notice notice-success is-dismissible"><p>'+data.msg+'</p></div>');
+					$('#wpbody-content').prepend('<div id="notice" class="notice notice-success is-dismissible"><p>'+data.msg+'</p></div>');
 				}
 			}else{
 				// show error
 				if ( typeof(data.msg)!=='undefined' ){
 					$('.notice').remove();
-					$('#wpbody-content').prepend('<div class="notice notice-error is-dismissible"><p>'+data.msg+'</p></div>');
+					$('#wpbody-content').prepend('<div id="notice" class="notice notice-error is-dismissible"><p>'+data.msg+'</p></div>');
 				}
 			}
 		} )
 		.fail( ()=>{
 			console.log(errorMsg);
 			$('.notice').remove();
-			$('#wpbody-content').prepend('<div class="notice notice-error is-dismissible"><p>'+errorMsg+'</p></div>');
+			$('#wpbody-content').prepend('<div id="notice" class="notice notice-error is-dismissible"><p>'+errorMsg+'</p></div>');
 		} )
 		.always( ()=>{
 			// enable all buttons when ajax request ending
