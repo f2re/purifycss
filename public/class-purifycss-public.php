@@ -62,16 +62,26 @@ class Purifycss_Public {
 	 */
 	function dequeue_all_styles() {
 		global $wp_styles;
-		// echo "<pre>";
+		global $wpdb;   
+		$table_name = $wpdb->prefix . "purifycss";
+		$need_to_enc = [];
+		
 		foreach( $wp_styles->queue as $style ) {
 			if ( $style=='admin-bar' ){
 				continue;
 			}
-			// print_r($style);
+			$src = $wp_styles->registered[$style]->src;
+			// echo $src;
+			$files = $wpdb->get_results( "SELECT css from $table_name WHERE  `orig_css` LIKE '%$src%' ;" );
+			foreach ($files as $file){
+				$need_to_enc[] = $file->css;	
+			}
 			// echo "/";
 			wp_dequeue_style($wp_styles->registered[$style]->handle);
 		}
-		// echo "</pre>";
+		// print_r($need_to_enc);
+		update_option( "purifycss_neededstyles", serialize($need_to_enc) );
+
 	}
 
 	/**
@@ -95,12 +105,25 @@ class Purifycss_Public {
 		// echo PurifycssHelper::get_css_file();
 		// get_option('purifycss_manual_css')==false
 		if ( true ){
+			$needed_styled = unserialize(get_option( "purifycss_neededstyles" ));
+			// print_r($needed_styled);
+			if ( is_array($needed_styled) && count($needed_styled)>0 ){
+				$i=0;
+				foreach ( $needed_styled as $style ){
+					wp_enqueue_style( $this->plugin_name.'_'.$i, $style, array(), $this->version, 'all' );
+					$i++;
+				}
+				wp_enqueue_style( $this->plugin_name.'_inline', plugin_dir_url( ( __FILE__ ) ).'../' . PurifycssHelper::$folder.PurifycssHelper::$inline_style, array(), $this->version, 'all' );
+			}
+
+			return;
+
 			global $wp;
-			$url = home_url(add_query_arg(array(), $wp->request));
+			// $url = home_url(add_query_arg(array(), $wp->request));
 			// echo $url;
 			global $wpdb;   
         	$table_name = $wpdb->prefix . "purifycss";
-			$files = $wpdb->get_results( "SELECT css from $table_name WHERE  `url` LIKE '${url}_' ;" );
+			$files = $wpdb->get_results( "SELECT css from $table_name WHERE  `orig_css` LIKE '%${url}%' ;" );
 			$i=0;
 			foreach ($files as $file){
 				// echo ($file->css);

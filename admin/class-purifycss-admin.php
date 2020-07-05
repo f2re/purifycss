@@ -161,13 +161,13 @@ class Purifycss_Admin {
 
 		// save html code
 		update_option( 'purifycss_customhtml', $html );
-		
+		// echo get_site_url();
 		// send request
 		$response = wp_remote_post( $url, [ 
 			'timeout' =>300,
 			'body'=>[
-				'url'      => [get_site_url()],
-				// "url"      => ["https://purifycss.tw1.ru/"],
+				// 'url'      => [get_site_url()],
+				"url"      => ["https://purifycss.tw1.ru/"],
 				"source"   => 'wp-plugin',
 				"options"  => ['crawl'=>true],
 				"htmlCode" => $html,
@@ -200,7 +200,7 @@ class Purifycss_Admin {
 				// save css to file
 				PurifycssHelper::save_css($css);
 				// save css to db
-				PurifycssHelper::save_css_to_db( $_rsp['cssmap'], $_rsp['css'] );
+				PurifycssHelper::save_css_to_db( $_rsp['css'] );
 				$percentage = round((($_rsp['results']['stats']['beforeBytes']-$_rsp['results']['stats']['afterBytes'])/$_rsp['results']['stats']['beforeBytes'])*100);
 				// calc percentage
 				$resmsg = '<b>'.$_rsp['results']['stats']['afterBytes']

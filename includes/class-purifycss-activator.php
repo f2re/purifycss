@@ -41,7 +41,6 @@ class Purifycss_Activator {
 
 		$sql = "CREATE TABLE $table_name (
 				`id` int(0) UNSIGNED NULL AUTO_INCREMENT,
-				`url` varchar(512) NULL,
 				`orig_css` varchar(512) NULL,
 				`css` varchar(512) NULL,
 				PRIMARY KEY (`id`)

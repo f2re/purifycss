@@ -139,7 +139,7 @@ class PurifycssHelper {
      * @param [type] $css
      * @return void
      */
-    static public function save_css_to_db($map, $css){
+    static public function save_css_to_db($css){
         global $wpdb;   
         $table_name = $wpdb->prefix . "purifycss";
         // clean db
@@ -162,21 +162,15 @@ class PurifycssHelper {
             if ( isset($_obj['inline']) && $_obj['inline']==True ){
                 $inline .= $_obj['purified']['content'];
             }else{
-                if ( isset($map[$_obj['url']]) ){
-                    $orig_file = $_obj['url'];
-                    // save to file
-                    $filename = md5($orig_file.uniqid()).'.css';
-                    file_put_contents( plugin_dir_path( dirname( __FILE__ ) ) . self::$folder.$filename , $_obj['purified']['content']);
-                    
-                    foreach ( $map[$_obj['url']] as $url ){
-                        $todb[] = [
-                            'url'      => $url,
-                            'orig_css' => $orig_file,
-                            'css'      => plugin_dir_url( ( __FILE__ ) ).'../' . self::$folder.$filename
-                        ];
-                    }
-                    
-                }
+                $orig_file = $_obj['url'];
+                // save to file
+                $filename = md5($orig_file.uniqid()).'.css';
+                file_put_contents( plugin_dir_path( dirname( __FILE__ ) ) . self::$folder.$filename , $_obj['purified']['content']);
+                
+                $todb[] = [
+                    'orig_css' => $orig_file,
+                    'css'      => plugin_dir_url( ( __FILE__ ) ).'../' . self::$folder.$filename
+                ];
             }
         }
 
@@ -187,13 +181,13 @@ class PurifycssHelper {
         // save to db
         
         $values =  array_reduce( $todb, function( $acc, $item ) {
-            $acc[] =" ( '".$item['url']."','".$item['orig_css']."','".$item['css']."' ) ";
+            $acc[] =" ( '".$item['orig_css']."','".$item['css']."' ) ";
             return $acc;
         } );
 
         if ( count($values)>0 ){
             $wpdb->query("INSERT INTO $table_name
-                            (url,orig_css,css)
+                            (orig_css,css)
                             VALUES ".join(',',$values).";");
         }
 
