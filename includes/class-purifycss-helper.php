@@ -17,14 +17,21 @@ class PurifycssHelper {
      *
      * @var string
      */
-    private static $folder = 'public/generatedcss/';
+    public static $folder = 'public/generatedcss/';
 
     /**
      * filename of style
      *
      * @var string
      */
-    private static $style = 'style.min.css';
+    public static $style = 'style.min.css';
+
+    /**
+     * inline style file name
+     *
+     * @var string
+     */
+    public static $inline_style = 'inline.css';
 
 	/**
 	 * save css to file with versionized
@@ -123,6 +130,74 @@ class PurifycssHelper {
             return true;
         }
         return false;
+    }
+
+    /**
+     * write to db css map and files
+     *
+     * @param [type] $map
+     * @param [type] $css
+     * @return void
+     */
+    static public function save_css_to_db($map, $css){
+        global $wpdb;   
+        $table_name = $wpdb->prefix . "purifycss";
+        // clean db
+        $wpdb->query("TRUNCATE TABLE $table_name");
+        // clean files
+        $files = glob(plugin_dir_path( dirname( __FILE__ ) ) . self::$folder.'*'); // get all file names
+        foreach($files as $file){ // iterate files
+            if(is_file($file)){
+                unlink($file); // delete file
+            }
+        }
+
+        // prepared array
+        $todb   = [];
+        // inlinestyles
+        $inline = "";
+        // iterate over map
+        foreach ($css as $_obj){
+            // check inline styles
+            if ( isset($_obj['inline']) && $_obj['inline']==True ){
+                $inline .= $_obj['purified']['content'];
+            }else{
+                if ( isset($map[$_obj['url']]) ){
+                    $orig_file = $_obj['url'];
+                    // save to file
+                    $filename = md5($orig_file).'.css';
+                    file_put_contents( plugin_dir_path( dirname( __FILE__ ) ) . self::$folder.$filename , $_obj['purified']['content']);
+                    
+                    foreach ( $map[$_obj['url']] as $url ){
+                        $todb[] = [
+                            'url'      => $url,
+                            'orig_css' => $orig_file,
+                            'css'      => plugin_dir_url( ( __FILE__ ) ).'../' . self::$folder.$filename
+                        ];
+                    }
+                    
+                }
+            }
+        }
+
+        // save inline styles
+        $filename = 'inline.css';
+        file_put_contents( plugin_dir_path( dirname( __FILE__ ) ) . self::$folder.$filename , $inline );
+
+        // save to db
+        
+        $values =  array_reduce( $todb, function( $acc, $item ) {
+            $acc[] =" ( '".$item['url']."','".$item['orig_css']."','".$item['css']."' ) ";
+            return $acc;
+        } );
+
+        if ( count($values)>0 ){
+            $wpdb->query("INSERT INTO $table_name
+                            (url,orig_css,css)
+                            VALUES ".join(',',$values).";");
+        }
+
+        return;
     }
 
 }

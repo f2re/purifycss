@@ -164,6 +164,7 @@ class Purifycss_Admin {
 		
 		// send request
 		$response = wp_remote_post( $url, [ 
+			'timeout' =>300,
 			'body'=>[
 				// 'url'      => [get_site_url()],
 				"url"      => ["https://purifycss.tw1.ru/"],
@@ -183,6 +184,7 @@ class Purifycss_Admin {
 		}else{
 			// get body request
 			$_rsp = json_decode($response['body'], true);
+			$rs = $_rsp;
 			if ( !$_rsp || isset($_rsp['error']) ){
 				$result = false;
 				if ( isset($_rsp['response']['message']) ){
@@ -197,6 +199,8 @@ class Purifycss_Admin {
 				$css = $_rsp['results']['purified']['content'];
 				// save css to file
 				PurifycssHelper::save_css($css);
+				// save css to db
+				PurifycssHelper::save_css_to_db( $_rsp['cssmap'], $_rsp['css'] );
 				$percentage = round((($_rsp['results']['stats']['beforeBytes']-$_rsp['results']['stats']['afterBytes'])/$_rsp['results']['stats']['beforeBytes'])*100);
 				// calc percentage
 				$resmsg = '<b>'.$_rsp['results']['stats']['afterBytes']
@@ -220,7 +224,7 @@ class Purifycss_Admin {
 				'msg'=>__('CSS generated successfully','purifycss'),
 				'resmsg'=>$resmsg,
 				'styles'=>$css,
-				'resp'=>$_rsp,
+				'resp'=>$rs,
 				'livemode' => get_option('purifycss_livemode'),
 				]);			
 		}else{

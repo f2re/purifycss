@@ -61,7 +61,7 @@ jQuery(document).ready(function($){
 	 */
 	function cssbutton_click(ev){
 		let customhtml='';
-		if ( typeof(customhtml_text.codemirror)!=='undefined' ){
+		if ( typeof(customhtml_text)!=='undefined' && typeof(customhtml_text.codemirror)!=='undefined' ){
 			customhtml = customhtml_text.codemirror.doc.getValue();
 		}else{
 			customhtml = $('#customhtml_text').val();

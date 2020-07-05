@@ -93,7 +93,24 @@ class Purifycss_Public {
 	 */
 	public function enqueue_styles() {
 		// echo PurifycssHelper::get_css_file();
-		wp_enqueue_style( $this->plugin_name, PurifycssHelper::get_css_file(), array(), $this->version, 'all' );
+		// get_option('purifycss_manual_css')==false
+		if ( true ){
+			global $wp;
+			$url = home_url(add_query_arg(array(), $wp->request));
+			// echo $url;
+			global $wpdb;   
+        	$table_name = $wpdb->prefix . "purifycss";
+			$files = $wpdb->get_results( "SELECT css from $table_name WHERE  `url` LIKE '${url}_' ;" );
+			$i=0;
+			foreach ($files as $file){
+				// echo ($file->css);
+				wp_enqueue_style( $this->plugin_name.'_'.$i, $file->css, array(), $this->version, 'all' );
+				$i++;
+			}
+			wp_enqueue_style( $this->plugin_name.'_inline', plugin_dir_url( ( __FILE__ ) ).'../' . PurifycssHelper::$folder.PurifycssHelper::$inline_style, array(), $this->version, 'all' );
+		}else{
+			wp_enqueue_style( $this->plugin_name, PurifycssHelper::get_css_file(), array(), $this->version, 'all' );
+		}
 	}
 
 	/**
