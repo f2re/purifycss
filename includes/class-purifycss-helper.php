@@ -165,7 +165,7 @@ class PurifycssHelper {
                 if ( isset($map[$_obj['url']]) ){
                     $orig_file = $_obj['url'];
                     // save to file
-                    $filename = md5($orig_file).'.css';
+                    $filename = md5($orig_file.uniqid()).'.css';
                     file_put_contents( plugin_dir_path( dirname( __FILE__ ) ) . self::$folder.$filename , $_obj['purified']['content']);
                     
                     foreach ( $map[$_obj['url']] as $url ){
