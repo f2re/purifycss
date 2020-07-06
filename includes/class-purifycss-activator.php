@@ -40,7 +40,7 @@ class Purifycss_Activator {
 		$charset_collate = $wpdb->get_charset_collate();
 
 		$sql = "CREATE TABLE $table_name (
-				`id` int(0) UNSIGNED NULL AUTO_INCREMENT,
+				`id` int(0) UNSIGNED AUTO_INCREMENT,
 				`orig_css` varchar(512) NULL,
 				`css` varchar(512) NULL,
 				PRIMARY KEY (`id`)
