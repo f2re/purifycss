@@ -166,8 +166,8 @@ class Purifycss_Admin {
 		$response = wp_remote_post( $url, [ 
 			'timeout' =>300,
 			'body'=>[
-				// 'url'      => [get_site_url()],
-				"url"      => ["https://purifycss.tw1.ru/"],
+				'url'      => [get_site_url()],
+				// "url"      => ["https://purifycss.tw1.ru/"],
 				"source"   => 'wp-plugin',
 				"options"  => ['crawl'=>true],
 				"htmlCode" => $html,
