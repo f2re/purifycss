@@ -163,19 +163,23 @@ class Purifycss_Admin {
 		update_option( 'purifycss_customhtml', $html );
 		// echo get_site_url();
 		// send request
-		$response = wp_remote_post( $url, [ 
-			'timeout' =>300,
-			'body'=>[
-				'url'      => [get_site_url()],
-				// "url"      => ["https://purifycss.tw1.ru/"],
-				"source"   => 'wp-plugin',
-				"options"  => ['crawl'=>true],
-				"htmlCode" => $html,
-				"key"      => $key 
-				]
+        $params = [
+            'timeout' =>300,
+            'body'=>[
+                'url'      => [get_site_url()],
+                // "url"      => ["https://purifycss.tw1.ru/"],
+                "source"   => 'wp-plugin',
+                "options"  => ['crawl'=>true],
+                "htmlCode" => base64_decode($html),
+                "key"      => $key
+            ]
 
-			 ] );
-		
+        ];
+
+        //error_log('[purifycss] sending request to '.$url);
+        //error_log('[purifycss]    with parameters: '.print_r($params, 1));
+
+		$response = wp_remote_post( $url, $params );
 		
 		// check error
 		if ( is_wp_error( $response ) ) {

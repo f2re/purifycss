@@ -50,7 +50,7 @@ class PurifycssHelper {
 
         // write code to file
         // style.css
-        unlink($file);
+        if ( file_exists( $file ) ) unlink($file);
         file_put_contents($file, $content);
 
         // store to db
@@ -160,26 +160,25 @@ class PurifycssHelper {
         foreach ($css as $_obj){
             // check inline styles
             if ( isset($_obj['inline']) && $_obj['inline']==True ){
-                $inline .= $_obj['purified']['content'];
+                $css_identifier = self::get_css_id_by_content($_obj['original']['content']);
             }else{
-                $orig_file = $_obj['url'];
-                // save to file
-                $filename = md5($orig_file.uniqid()).'.css';
-                file_put_contents( plugin_dir_path( dirname( __FILE__ ) ) . self::$folder.$filename , $_obj['purified']['content']);
-                
-                $todb[] = [
-                    'orig_css' => $orig_file,
-                    'css'      => plugin_dir_url( ( __FILE__ ) ).'../' . self::$folder.$filename
-                ];
+                $css_identifier = $_obj['url'];
             }
+
+            // save to file
+            $filename = md5($css_identifier.uniqid()).'.css';
+
+            $_obj = apply_filters('purifycss_before_filesave', $_obj);
+            file_put_contents( plugin_dir_path( dirname( __FILE__ ) ) . self::$folder.$filename , $_obj['purified']['content']);
+
+            $todb[] = [
+                'orig_css' => $css_identifier,
+                'css'      => '../' . self::$folder.$filename
+            ];
+
         }
 
-        // save inline styles
-        $filename = 'inline.css';
-        file_put_contents( plugin_dir_path( dirname( __FILE__ ) ) . self::$folder.$filename , $inline );
-
         // save to db
-        
         $values =  array_reduce( $todb, function( $acc, $item ) {
             $acc[] =" ( '".$item['orig_css']."','".$item['css']."' ) ";
             return $acc;
@@ -192,6 +191,11 @@ class PurifycssHelper {
         }
 
         return;
+    }
+
+
+    static public function get_css_id_by_content($content) {
+        return substr(trim(preg_replace('/\s+/', ' ', $content)), 0, 512);
     }
 
 }
