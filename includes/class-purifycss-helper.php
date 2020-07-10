@@ -75,23 +75,44 @@ class PurifycssHelper {
     }
 
     /**
-     * compare referer with needed values
+     * Checks if PurifyCSS is enabled
+     *
+     * @return boolean
+     */
+    public static function is_enabled() {
+        if (self::force_enabled()) return true;
+        if (self::force_disabled()) return false;
+
+        if (self::check_test_mode()) return true;
+        if (self::check_live_mode()) return true;
+
+        return false;
+    }
+
+    /**
+     * Using parameter ?purify=false
      *
      * @return void
      */
-    static public function check_referer(){
-
+    static public function force_disabled(){
         if (isset($_GET['purify']) && $_GET['purify']=='false' ) {
             return true;
         }
         return false;
+    }
 
-        // echo wp_get_raw_referer();
-        if ( strpos(wp_get_raw_referer(),'https://purifycss.online')!==false ){
+    /**
+     * Using parameter ?purify=false
+     *
+     * @return void
+     */
+    static public function force_enabled(){
+        if (isset($_GET['purify']) && $_GET['purify']=='true' ) {
             return true;
         }
         return false;
     }
+
 
     /**
      * get path to css file
@@ -195,7 +216,7 @@ class PurifycssHelper {
 
 
     static public function get_css_id_by_content($content) {
-        return substr(trim(preg_replace('/\s+/', ' ', $content)), 0, 512);
+        return substr(trim(preg_replace('/\s+/', ' ', $content)), 0, 100);
     }
 
 }

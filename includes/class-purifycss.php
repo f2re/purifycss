@@ -195,15 +195,9 @@ class Purifycss {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
-		// add menu plugin with action links
-		// $this->loader->add_filter( 'plugin_action_links_'.plugin_basename(__FILE__), $plugin_public, 'add_plugin_action_links' );
-
 		// add filter to remove inline styles
-		if ( !PurifycssHelper::check_referer() && ( PurifycssHelper::check_live_mode() || PurifycssHelper::check_test_mode() ) ){
-			//
-			// Define public hooks to replace styles
-			//
-			// this will remove all enqueued styles in head
+		if ( PurifycssHelper::is_enabled() ){
+
 			$this->loader->add_action( 'wp_print_styles', $plugin_public, 'dequeue_all_styles', PHP_INT_MAX - 1 );
 			$this->loader->add_action( 'elementor/frontend/after_enqueue_styles', $plugin_public, 'dequeue_all_styles', PHP_INT_MAX );
 

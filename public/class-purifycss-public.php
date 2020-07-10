@@ -40,7 +40,12 @@ class Purifycss_Public {
 	 */
 	private $version;
 
-	/**
+    /**
+     * @var file mapping between original and purified css from DB (cached)
+     */
+    private $files;
+
+    /**
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
@@ -65,6 +70,8 @@ class Purifycss_Public {
 		global $wpdb;   
 		$table_name = $wpdb->prefix . "purifycss";
 		$need_to_enc = [];
+
+		$this->debug_enqueued_styles();
 
         foreach( $wp_styles->queue as $style ) {
 
@@ -117,6 +124,65 @@ class Purifycss_Public {
         }
 	}
 
+    /**
+     * maps original css to purified css from db table
+     * requests db only once per request
+     *
+     * @return string|boolean
+     */
+	public function get_matching_file($identifier) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . "purifycss";
+
+        if (!$this->files) {
+            $this->files = $wpdb->get_results( "SELECT orig_css, css from $table_name;" );
+        }
+
+        foreach ($this->files as $file) {
+            if ( strpos($file->orig_css, $identifier) !== false ) return $file->css;
+        }
+
+        return false;
+    }
+
+
+    public function debug_enqueued_styles() {
+        global $wp_styles;
+
+        if (isset($_GET['purifydebug']) && $_GET['purifydebug']=1) {
+            echo "<table style='font-size:11px;line-height:1;background:white;color:black;border: 1px solid black;margin: 10px;'>";
+            foreach( $wp_styles->queue as $style ) {
+                if (strpos($style, 'purified') != false) continue;
+
+
+
+                echo "<tr>";
+                echo "<td>$style</td>";
+                echo "<td>".$wp_styles->registered[$style]->src."</td>";
+                echo "<td>".$this->get_matching_file($wp_styles->registered[$style]->src)."</td>";
+                echo "</tr>";
+
+                foreach ($wp_styles->registered[$style]->deps as $dep) {
+                    echo "<tr>";
+                    echo "<td> └─ dep: $dep</td>";
+                    echo "<td>".$wp_styles->registered[$dep]->src."</td>";
+                    echo "<td>".$this->get_matching_file($wp_styles->registered[$dep]->src)."</td>";
+                    echo "</tr>";
+                }
+
+                $inline_style = $wp_styles->print_inline_style($wp_styles->registered[$style]->handle, false);
+                if ($inline_style) {
+                    $identifier = PurifycssHelper::get_css_id_by_content($inline_style);
+                    echo "<tr>";
+                    echo "<td> └─ inline</td>";
+                    echo "<td>".$identifier."... </td>";
+                    echo "<td>".$this->get_matching_file($identifier)."</td>";
+                    echo "</tr>";
+                }
+            }
+            echo "</table>";
+        }
+    }
 
     /**
      * buffer html output
@@ -143,10 +209,8 @@ class Purifycss_Public {
         $matches = '';
         preg_match_all('/<style[^>]*>([^<]*)<\/style>/im', $wpHTML, $matches);
 
-
-
         foreach ($matches[1] as $key => $match) {
-            $css_identifier = substr(trim(preg_replace('/\s+/', ' ', $match)), 0, 512);
+            $css_identifier = PurifycssHelper::get_css_id_by_content($match);
 
             $files = $wpdb->get_results( "SELECT css from $table_name WHERE  `orig_css` LIKE '%$css_identifier%';" );
 

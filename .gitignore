@@ -2,3 +2,5 @@ vendor
 .phpintel/
 .phpintel
 .code-workspace
+/public/generatedcss/
+/.idea/
